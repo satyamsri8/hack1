@@ -1,0 +1,75 @@
+
+class LogRegression:
+    """docstring for LogRegression."""
+    def __init__(self, num_of_iterations, learning_rate):
+        # super(LogRegression, self).__init__()
+        # self.arg = arg
+
+        self.num_of_iterations = num_of_iterations
+        self.learning_rate = learning_rate
+
+    def __sigmoid(self, x):
+        sig = 1/(1+ np.exp(-1*x))
+        return sig
+
+    def __add_column(self, X):
+        a = np.empty(X.shape[0])
+        a.fill(1)
+        X = np.hstack((X, np.atleast_2d(a).T))
+        return X
+
+
+    """You can give any required inputs to the fit()"""
+    def fit(self, X_train, Y_train):
+
+        """Write it from scratch. Usage of sklearn is not allowed"""
+        # First step is, randomly initialize the weights.
+        # The dimension of weight matrix = number of attributes + 1.
+        no_of_attr = X_train.shape[1]
+        self.weights = np.random.rand(1+no_of_attr, 1)
+
+        # Concatenate 1 column in X_train
+        X_train = self.__add_column(X_train)
+        
+        # Optimize the weights in order to achieve local minima.
+        for i in range(self.num_of_iterations):
+
+            # Compute weight.T 
+            z = np.dot(X_train, self.weights)
+            h = self.__sigmoid(z)
+            
+#             print(z.shape, h.shape, Y_train.shape)
+#             print(Y_train)
+#             print(h)
+            
+            diff = Y_train - h[0]
+#             print(diff.shape, diff)
+            J = np.dot(X_train.T, diff)
+#             print(diff.shape, J.shape)
+            
+            x = self.learning_rate * J
+#             print(x.shape)
+            x = np.reshape(x, (x.shape[0], 1))
+            self.weights = self.weights + x
+#             print(self.weights.shape)
+
+
+    def predict(self, X_test):
+
+        """Write it from scratch. Usage of sklearn is not allowed"""
+
+        """Fill your code here. predict() should only take X_test and return predictions."""
+        # Add column with values 1 in X_test
+        X_test = self.__add_column(X_test)
+
+        z = np.dot(X_test, self.weights)
+        h = self.__sigmoid(z)
+
+        y_predicted = []
+        for i in range(h.shape[0]):
+            if h[i] > 0.5:
+                y_predicted.append(1)
+            else:
+                y_predicted.append(0)
+
+        return y_predicted
