@@ -1,1 +1,2 @@
 print("T")
+print("R")
